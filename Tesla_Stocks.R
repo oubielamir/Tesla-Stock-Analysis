@@ -19,16 +19,16 @@ tsl_spearate <- tesla_stock %>% separate(Date, c("year", "month", "day"), sep = 
 
 #Average year close
 tsl_spearate %>% group_by(year) %>% summarize(yearly_avg = mean(Close)) %>%
-                 ggplot(aes(year, yearly_avg, color = year, group = 11)) + geom_line(aes(legend.position = "none"))
+                 ggplot(aes(year, yearly_avg, color = year, group = 1)) + geom_line()
 
 #Average monthly close
 tsl_spearate %>% group_by(year, month) %>% summarize(monthly_avg = mean(Close)) %>% 
-  ggplot(aes(month ,monthly_avg, colour = factor(year), group = year)) +geom_line() +geom_point()
+  ggplot(aes(month ,monthly_avg, colour = year, group = year)) +geom_line() +geom_point()
   
 
 # diff of close each day
 tsl_spearate %>% mutate(lag_close = lag(Close), daily_diff = Close - lag_close, 
-                 percentage = abs(Close-lag_close)/((Close+lag_close)/2)*100) %>%
+                 percentage = abs(Close-lag_close)/((Close+lag_close)/2)*100)
                  
   
   
@@ -36,8 +36,6 @@ tsl_spearate %>% mutate(lag_close = lag(Close), daily_diff = Close - lag_close,
   
   
   
-  
-
 #highest close open difference per year 
 tsl_spearate %>% group_by(year) %>% summarize(max(Close -Open))
   

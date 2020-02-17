@@ -2,6 +2,7 @@ library(dplyr)
 library(lubridate)
 library(tidytext)
 library(tidyr)
+library(ggplot2)
 
 tesla_stock <- read.csv("TSLA.csv", stringsAsFactors = F)
 
@@ -13,8 +14,37 @@ tesla_stock <- read.csv("TSLA.csv", stringsAsFactors = F)
 tesla_stock %>% mutate(open_close = Close - Open) %>% filter(open_close == max(open_close))
 
 #separate date into year, month, day
-tsl_spearate <- tesla_stock %>% separate(Date, c("year", "month", "day"), sep = "-")
+tsl_spearate <- tesla_stock %>% separate(Date, c("year", "month", "day"), sep = "-") 
+
+
+#Average year close
+tsl_spearate %>% group_by(year) %>% summarize(yearly_avg = mean(Close)) %>%
+                 ggplot(aes(year, yearly_avg, color = year, group = 11)) + geom_line(aes(legend.position = "none"))
+
+#Average monthly close
+tsl_spearate %>% group_by(year, month) %>% summarize(monthly_avg = mean(Close)) %>% 
+  ggplot(aes(month ,monthly_avg, colour = factor(year), group = year)) +geom_line() +geom_point()
+  
+
+# diff of close each day
+tsl_spearate %>% mutate(lag_close = lag(Close), daily_diff = Close - lag_close, 
+                 percentage = abs(Close-lag_close)/((Close+lag_close)/2)*100) %>%
+                 
+  
+  
+  
+  
+  
+  
+  
 
 #highest close open difference per year 
-tsl_sperate %>% group_by(year) %>% summarize(max(Close -Open))
+tsl_spearate %>% group_by(year) %>% summarize(max(Close -Open))
+  
+
+
+tsl <- tesla_stock %>% separate(Date, c("year", "month", "day"), sep = "-") %>% 
+  mutate(close_open = Close- Open, percentage = (abs(Close - Open)/((Close + Open)/2))*100)
+
+tsl %>% group_by(year) %>% filter(percentage == max(percentage))
   
